@@ -1,0 +1,33 @@
+# JAX-Metal plugin CI
+
+name: Jax-Metal CI
+on:
+  workflow_dispatch: # allows triggering the workflow run manually
+
+jobs:
+  jax-metal-plugin-test:
+    strategy:
+      fail-fast: false # don't cancel all jobs on failure
+      matrix:
+        jaxlib-version: ["plugin_latest", "nightly"]
+    name: "Jax-Metal plugin test (jaxlib=${{ matrix.jaxlib-version }})"
+    runs-on: [macos-14]
+    steps:
+      - name: Setup build and test enviroment
+      - run: |
+          rm -rf ${GITHUB_WORKSPACE}/jax-metal-venv
+          python3 -m venv ${GITHUB_WORKSPACE}/jax-metal-venv
+          source  ${GITHUB_WORKSPACE}/jax-metal-venv/bin/activate
+          pip install -U pip numpy wheel
+          pip install jax-metal absl-py pytest
+      - name: Install Jax
+      - run: |
+          pip install .
+          if [ "${{ matrix.jaxlib-version }}" == "nightly" ]; then
+            pip install --pre jaxlib \
+              -f https://storage.googleapis.com/jax-releases/jaxlib_nightly_releases.html
+      - name: Run test
+      - env: ENABLE_PJRT_COMPATIBILITY = 1
+      - run: pytest tests/lax_test.py::LaxTest -k testOps
+
+
