@@ -12,7 +12,7 @@ jobs:
       matrix:
         jaxlib-version: ["plugin_latest", "nightly"]
     name: "Jax-Metal plugin test (jaxlib=${{ matrix.jaxlib-version }})"
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, macOS, ARM64]
 
     steps:
       - name: Setup build and test enviroment
