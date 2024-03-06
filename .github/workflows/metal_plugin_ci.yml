@@ -27,11 +27,12 @@ jobs:
           if [ "${{ matrix.jaxlib-version }}" == "nightly" ]; then
             pip install --pre jaxlib \
               -f https://storage.googleapis.com/jax-releases/jaxlib_nightly_releases.html
-      - name: Get repo and install
+      - name: Get repo
         uses: actions/checkout@v4
         with:
           sparse-checkout: .
           path: ${GITHUB_WORKSPACE}/jax
+      - name: Install jax and tests
         run: |
           cd ${GITHUB_WORKSPACE}/jax
           pip install .
