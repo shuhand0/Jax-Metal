@@ -23,10 +23,11 @@ jobs:
           pip install -U pip numpy wheel
           pip install jax-metal absl-py pytest
       - name: Install Jaxlib
-        if: ${{ "${{ matrix.jaxlib-version }}" == "nightly" }}
-        run:
+        run: |
+          if [[ "${{ matrix.jaxlib-version }}" == "nightly" ]]; then
             pip install --pre jaxlib \
               -f https://storage.googleapis.com/jax-releases/jaxlib_nightly_releases.html
+          fi;
       - name: Get repo
         uses: actions/checkout@v4
         with:
