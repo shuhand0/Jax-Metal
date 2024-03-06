@@ -15,6 +15,11 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
 
     steps:
+      - name: Get repo
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .
+          path: jax
       - name: Setup build and test enviroment
         run: |
           rm -rf ${GITHUB_WORKSPACE}/jax-metal-venv
@@ -22,22 +27,16 @@ jobs:
           source  ${GITHUB_WORKSPACE}/jax-metal-venv/bin/activate
           pip install -U pip numpy wheel
           pip install jax-metal absl-py pytest
-      - name: Install Jaxlib
-        run: |
           if [[ "${{ matrix.jaxlib-version }}" == "nightly" ]]; then
             pip install --pre jaxlib \
               -f https://storage.googleapis.com/jax-releases/jaxlib_nightly_releases.html
           fi;
-      - name: Get repo
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: .
-          path: jax
-      - name: Install jax and tests
-        run: |
           cd jax
           pip install .
       - name: Run test
-        run: ENABLE_PJRT_COMPATIBILITY = 1 pytest tests/lax_metal_test.py
+        run: |
+          source  ${GITHUB_WORKSPACE}/jax-metal-venv/bin/activate
+          cd jax
+          ENABLE_PJRT_COMPATIBILITY = 1 pytest tests/lax_metal_test.py
 
 
