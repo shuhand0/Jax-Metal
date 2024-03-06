@@ -22,12 +22,19 @@ jobs:
           source  ${GITHUB_WORKSPACE}/jax-metal-venv/bin/activate
           pip install -U pip numpy wheel
           pip install jax-metal absl-py pytest
-      - name: Install Jax
+      - name: Install Jaxlib
         run: |
-          pip install .
           if [ "${{ matrix.jaxlib-version }}" == "nightly" ]; then
             pip install --pre jaxlib \
               -f https://storage.googleapis.com/jax-releases/jaxlib_nightly_releases.html
+      - name: Get tests and repo
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .
+          path: ${GITHUB_WORKSPACE}/jax
+        run: |
+          cd ${GITHUB_WORKSPACE}/jax
+          pip install .
       - name: Run test
         run: ENABLE_PJRT_COMPATIBILITY = 1 pytest tests/lax_metal_test.py
 
