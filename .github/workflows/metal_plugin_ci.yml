@@ -35,7 +35,8 @@ jobs:
       - name: Run test
         run: |
           source  ${GITHUB_WORKSPACE}/jax-metal-venv/bin/activate
+          export ENABLE_PJRT_COMPATIBILITY=1
           cd jax
-          ENABLE_PJRT_COMPATIBILITY = 1 pytest tests/lax_metal_test.py
+          pytest tests/lax_metal_test.py
 
 
